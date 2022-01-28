@@ -14,15 +14,35 @@ Manage Todo of yours!
 
 1. Building a docker image
     ```bash
-    $ docker-compose build
+    $ make build
     ```
 
-3. Migrate Database
+2. Migrate Database
     ```bash
-    $ docker-compose run --rm app python manage.py migrate
+    $ make migrate
     ```
 
-4. start docker container
+3. Start docker container
     ```bash
-    $ docker-compose up 
+    $ make run 
+    ```
+
+4. Stop docker container
+    ```bash
+    $ make down
+    ```
+
+# Useful commands
+
+- Log into app container
+    ```bash
+    $ make sh
+    ```
+- Make migrations for new model
+    ```bash
+    $ make makemigrations
+    ```
+- Run unit test
+    ```bash
+    $ make test
     ```
