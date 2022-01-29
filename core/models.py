@@ -53,6 +53,8 @@ class TodoList(models.Model):
     name = models.CharField(max_length=255)
     is_default = models.BooleanField(default=False)
 
+    DEFAULT_NAME = 'Default'
+
     def __str__(self):
         """String representation of TodoList"""
         return self.name

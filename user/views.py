@@ -16,7 +16,7 @@ class CreateUserView(generics.CreateAPIView):
         user = serializer.save()
         TodoList.objects.create(
             user=user,
-            name='Default',
+            name=TodoList.DEFAULT_NAME,
             is_default=True
         )
 
