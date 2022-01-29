@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -41,3 +42,37 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class TodoList(models.Model):
+    """Todo list objects"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    name = models.CharField(max_length=255)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        """String representation of TodoList"""
+        return self.name
+
+
+class TodoTask(models.Model):
+    """Todo Task objects"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    todo_list = models.ForeignKey(
+        'core.TodoList',
+        on_delete=models.CASCADE,
+    )
+    title = models.CharField(max_length=255)
+    priority = models.IntegerField(default=0)
+    is_completed = models.BooleanField(default=False)
+    note = models.TextField(blank=True)
+
+    def __str__(self):
+        """String representation of TodoTask"""
+        return self.title
