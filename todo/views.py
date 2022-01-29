@@ -19,3 +19,15 @@ class TodoListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         """Create a new TodoList"""
         serializer.save(user=self.request.user)
+
+
+class TodoListDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Manage Todo List"""
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = TodoList.objects.all()
+    serializer_class = serializers.TodoListSerializer
+
+    def get_queryset(self):
+        """Return objects for  the current authenticated user only"""
+        return self.queryset.filter(user=self.request.user).order_by('-name')
