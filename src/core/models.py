@@ -53,6 +53,8 @@ class TodoList(models.Model):
         on_delete=models.CASCADE
     )
     label = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.label
@@ -65,9 +67,11 @@ class Task(models.Model):
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=255)
-    content = models.TextField(null=True)
+    content = models.TextField(null=True, blank=True)
     completed = models.BooleanField(default=False)
-    deadline = models.DateTimeField(null=True)
+    deadline = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

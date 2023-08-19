@@ -13,8 +13,8 @@ class TodoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TodoList
-        fields = ['id', 'label']
-        read_only_fields = ['id']
+        fields = ['id', 'label', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
     def create(self, validated_data):
         """Create a todo list"""
