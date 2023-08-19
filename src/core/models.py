@@ -60,10 +60,6 @@ class TodoList(models.Model):
 
 class Task(models.Model):
     """Task model."""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
     todo_list = models.ForeignKey(
         TodoList,
         on_delete=models.CASCADE

@@ -78,7 +78,6 @@ class ModelTests(TestCase):
             label='Test List'
         )
         task = models.Task.objects.create(
-            user=user,
             todo_list=todo_list,
             name='Sample Task'
         )
