@@ -1,6 +1,7 @@
 """
 Database models
 """
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -43,3 +44,34 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class TodoList(models.Model):
+    """Todo List model."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    label = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.label
+
+
+class Task(models.Model):
+    """Task model."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    todo_list = models.ForeignKey(
+        TodoList,
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=255)
+    content = models.TextField(null=True)
+    completed = models.BooleanField(default=False)
+    deadline = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return self.name

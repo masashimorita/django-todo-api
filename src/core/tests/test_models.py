@@ -4,6 +4,8 @@ Tests for Models
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
+from core import models
+
 
 def create_user(email='test@example.com', password='password123'):
     """Create and return a new user."""
@@ -57,3 +59,28 @@ class ModelTests(TestCase):
         )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_todo_list(self):
+        """Test creating a todo list is successfull."""
+        user = create_user()
+        todo_list = models.TodoList.objects.create(
+            user=user,
+            label='Test List'
+        )
+
+        self.assertEqual(str(todo_list), todo_list.label)
+
+    def test_create_task(self):
+        """Test creating a task is successfull."""
+        user = create_user()
+        todo_list = models.TodoList.objects.create(
+            user=user,
+            label='Test List'
+        )
+        task = models.Task.objects.create(
+            user=user,
+            todo_list=todo_list,
+            name='Sample Task'
+        )
+
+        self.assertEqual(str(task), task.name)
