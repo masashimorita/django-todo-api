@@ -44,3 +44,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.TodoList)
+admin.site.register(models.Task)
