@@ -75,3 +75,13 @@ class PrivateTodoAPITests(TestCase):
         serializer = TodoListSerializer(todo_lists, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_todo_list(self):
+        """Test creating a todo list"""
+        payload = {'label': 'Sample List'}
+        res = self.client.post(TODO_LIST_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(TodoList.objects.filter(id=res.data['id']).exists())
+        todo_list = TodoList.objects.get(id=res.data['id'])
+        self.assertEqual(todo_list.user, self.user)
