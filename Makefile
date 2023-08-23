@@ -12,6 +12,9 @@ create-app:
 sh:
 	docker compose run --rm app sh
 
+shell:
+	docker compose run --rm app sh -c "python manage.py shell"
+
 up:
 	docker compose up
 
