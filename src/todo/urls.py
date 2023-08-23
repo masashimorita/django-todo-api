@@ -16,4 +16,10 @@ urlpatterns = [
         views.TodoListDetailView.as_view(),
         name='todo-list-detail'
     ),
+    path('<int:todo_list_id>/tasks', views.TasksView.as_view(), name='tasks'),
+    path(
+        '<int:todo_list_id>/tasks/<int:pk>',
+        views.TaskDetailView.as_view(),
+        name='task-detail'
+    ),
 ]
