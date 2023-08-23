@@ -10,14 +10,22 @@ from rest_framework import status
 
 from core.models import (
     TodoList,
+    Task,
 )
 
 from todo.serializers import (
     TodoListSerializer,
+    TodoListDetailSerializer,
+    TaskSerializer,
 )
 
 
 TODO_LIST_URL = reverse('todo:todo-lists')
+
+
+def detail_url(todo_list_id):
+    """Create and return a todo list detail URL."""
+    return reverse('todo:todo-list-detail', args=[todo_list_id])
 
 
 def create_user(email='test@example.com', password='password123', **params):
@@ -28,6 +36,11 @@ def create_user(email='test@example.com', password='password123', **params):
 def create_todo_lsit(user, label='Sample List'):
     """Create and return a new todo list"""
     return TodoList.objects.create(user=user, label=label)
+
+
+def create_task(todo_list, **params):
+    """Create and return a new task"""
+    return Task.objects.create(todo_list=todo_list, **params)
 
 
 class PublicTodoAPITests(TestCase):
@@ -85,3 +98,54 @@ class PrivateTodoAPITests(TestCase):
         self.assertTrue(TodoList.objects.filter(id=res.data['id']).exists())
         todo_list = TodoList.objects.get(id=res.data['id'])
         self.assertEqual(todo_list.user, self.user)
+
+    def test_retrieve_todo_list_by_pk(self):
+        """Test retrieving a todo list with pk."""
+        todo_list = create_todo_lsit(user=self.user)
+        task = create_task(todo_list=todo_list, name='Sample Task')
+        url = detail_url(todo_list_id=todo_list.id)
+
+        res = self.client.get(url)
+
+        serializer = TodoListDetailSerializer(todo_list)
+        task_serializer = TaskSerializer(task)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+        self.assertIn(task_serializer.data, serializer.data['tasks'])
+
+    def test_update_todo_list(self):
+        """Test updating a todo list."""
+        todo_list = create_todo_lsit(user=self.user)
+        payload = {'label': 'Shopping'}
+        url = detail_url(todo_list_id=todo_list.id)
+
+        res = self.client.put(url, payload)
+
+        todo_list.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(todo_list.label, payload['label'])
+
+    def test_delete_todo_list(self):
+        """Test deleting a todo list."""
+        todo_list = create_todo_lsit(user=self.user)
+        task = create_task(todo_list=todo_list, name='Sample Task')
+        url = detail_url(todo_list_id=todo_list.id)
+
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(TodoList.objects.filter(id=todo_list.id).exists())
+        self.assertFalse(Task.objects.filter(id=task.id).exists())
+
+    def test_delete_todo_list_other_user_error(self):
+        """Test trying to delete other users todo list gives error."""
+        other_user = create_user(email='other@example.com')
+        todo_list = create_todo_lsit(user=other_user)
+        task = create_task(todo_list=todo_list, name='Sample Task')
+        url = detail_url(todo_list_id=todo_list.id)
+
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(TodoList.objects.filter(id=todo_list.id).exists())
+        self.assertTrue(Task.objects.filter(id=task.id).exists())
